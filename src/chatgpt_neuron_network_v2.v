@@ -11,7 +11,7 @@ module chatgpt_neuron_network (
     reg [7:0] THRESHOLD, LEAK_RATE, REFRAC_PERIOD;
     reg [7:0] SECOND_LAYER_WEIGHTS[2:0][2:0];
     reg [7:0] FIRST_LAYER_WEIGHTS[2:0];  // Weights for each neuron in the first layer
-    integer i, j;  // Loop variables
+    integer i, j, a, b, c;  // Loop variables
     reg [7:0] input_currents[2:0];  // Computed input currents for the first layer
 
     // Process data_in based on addr input
@@ -46,8 +46,8 @@ module chatgpt_neuron_network (
 
     // Compute input currents from spikes_in and FIRST_LAYER_WEIGHTS
     always @(*) begin
-        for (i = 0; i < 3; i = i + 1) begin
-            input_currents[i] = spikes_in[i] ? FIRST_LAYER_WEIGHTS[i] : 8'd0;
+        for (a = 0; a < 3; a = a + 1) begin
+            input_currents[a] = spikes_in[a] ? FIRST_LAYER_WEIGHTS[i] : 8'd0;
         end
     end
 
@@ -72,31 +72,32 @@ module chatgpt_neuron_network (
     // Logic to compute effective current for second layer neurons based on spikes and SECOND_LAYER_WEIGHTS
     reg [7:0] second_layer_currents[2:0];
     always @(posedge clk) begin
-        for (i = 0; i < 3; i = i + 1) begin
+        for (b = 0; b < 3; b = b + 1) begin
             second_layer_currents[i] = 0;
-            for (j = 0; j < 3; j = j + 1) begin
+            for (c = 0; c < 3; c = c + 1) begin
                 if (first_layer_spikes[j]) begin
                     // Check for potential overflow
-                    if ((255 - second_layer_currents[i]) < SECOND_LAYER_WEIGHTS[j][i]) 
-                        second_layer_currents[i] = 255;  // Set to max value if overflow occurs
+                    if ((255 - second_layer_currents[b]) < SECOND_LAYER_WEIGHTS[c][b]) 
+                        second_layer_currents[b] = 255;  // Set to max value if overflow occurs
                     else
-                        second_layer_currents[i] = second_layer_currents[i] + SECOND_LAYER_WEIGHTS[j][i];
+                        second_layer_currents[b] = second_layer_currents[b] + SECOND_LAYER_WEIGHTS[c][b];
                 end
             end
         end
     end
 
     // Second layer of neurons
+    genvar kk;
     generate
-        for (k = 0; k < 3; k = k + 1) begin : SECOND_LAYER_GEN
+        for (kk = 0; kk < 3; kk = kk + 1) begin : SECOND_LAYER_GEN
             leaky_integrate_fire_neuron second_layer_inst (
                 .clk(clk),
                 .reset(reset),
                 .THRESHOLD(THRESHOLD),
                 .LEAK_RATE(LEAK_RATE),
                 .REFRAC_PERIOD(REFRAC_PERIOD),
-                .current(second_layer_currents[k]),
-                .spike(spikes_out[k])
+                .current(second_layer_currents[kk]),
+                .spike(spikes_out[kk])
             );
         end
     endgenerate

@@ -94,6 +94,6 @@ module spi_slave (
     end
 
     // MISO behavior using assign statement
-    assign miso = (cs_n) ? 1'bz : miso_buf;
+    assign miso = (cs_n) ? 1'b0 : miso_buf;
 
 endmodule
