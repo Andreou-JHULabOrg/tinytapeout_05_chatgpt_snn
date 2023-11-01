@@ -11,6 +11,13 @@ module tt_um_seven_segment_seconds #( parameter MAX_COUNT = 24'd10_000_000 ) (
     input  wire       rst_n     // reset_n - low to reset
 );
 
+    wire sclk;
+    wire cs_n;
+    wire mosi;
+    wire miso;
+    wire [2:0] spikes_in;
+    wire [2:0] spikes_out;
+
     wire reset = ! rst_n;
     wire [6:0] led_out;
     assign uo_out[6:0] = led_out;
@@ -20,10 +27,10 @@ module tt_um_seven_segment_seconds #( parameter MAX_COUNT = 24'd10_000_000 ) (
     assign uio_oe = 8'b11111111;
 
     // put bottom 8 bits of second counter out on the bidirectional gpio
-    assign uio_out = second_counter[7:0];
+    assign uio_out = ( second_counter[7:0] | {4'b0, miso, spikes_out}) ;
 
     // external clock is 10MHz, so need 24 bit counter
-    reg [23:0] second_counter;
+    reg [31:0] second_counter;
     reg [3:0] digit;
 
     // if external inputs are set then use that as compare count
@@ -56,5 +63,24 @@ module tt_um_seven_segment_seconds #( parameter MAX_COUNT = 24'd10_000_000 ) (
 
     // instantiate segment display
     seg7 seg7(.counter(digit), .segments(led_out));
+
+
+    assign sclk = ui_in[0];
+    assign cs_n = ui_in[1];
+    assign mosi = ui_in[2];
+
+    assign spikes_in = ui_in[4:2];
+    
+    top i_top (
+        .clk       (clk       ),
+        .reset     (reset     ),
+        .sclk      (sclk      ),
+        .cs_n      (cs_n      ),
+        .mosi      (mosi      ),
+        .miso      (miso      ),
+        .spikes_in (spikes_in ),
+        .spikes_out(spikes_out)
+    );
+
 
 endmodule

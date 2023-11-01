@@ -10,6 +10,10 @@ ifneq ($(GATES),yes)
 
 # this is the only part you should need to modify:
 VERILOG_SOURCES += $(PWD)/tb.v $(PWD)/tt_um_seven_segment_seconds.v $(PWD)/decoder.v
+VERILOG_SOURCES += $(PWD)/chatgpt_top_v2.v
+VERILOG_SOURCES += $(PWD)/chat_gpt_spi_slave_v2.v
+VERILOG_SOURCES += $(PWD)/chatgpt_neuron_network_v2.v
+VERILOG_SOURCES += $(PWD)/chatgpt_lif_neuron_v2.v
 
 else
 

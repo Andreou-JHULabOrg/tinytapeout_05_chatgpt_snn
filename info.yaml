@@ -8,10 +8,14 @@ project:
   source_files:        
     - tt_um_seven_segment_seconds.v
     - decoder.v
+    - chat_gpt_spi_slave_v2.v
+    - chatgpt_lif_neuron_v2.v
+    - chatgpt_neuron_network_v2.v
+    - chatgpt_top_v2.v
   top_module:  "tt_um_seven_segment_seconds"      # Put the name of your top module here, must start with "tt_um_". Make it unique by including your github username
 
 # How many tiles your design occupies? A single tile is about 167x108 uM.
-  tiles: "1x1"    # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2 or 8x2
+  tiles: "2x2"    # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2 or 8x2
 
 # Keep a track of the submission yaml
 yaml_version: 4
