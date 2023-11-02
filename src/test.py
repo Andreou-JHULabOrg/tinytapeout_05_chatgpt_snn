@@ -5,6 +5,16 @@ from cocotb.triggers import RisingEdge, FallingEdge, Timer, ClockCycles
 
 segments = [ 63, 6, 91, 79, 102, 109, 125, 7, 127, 111 ]
 
+async def apply_reset(dut):
+    await ClockCycles(dut.clk, 10)
+    dut.rst_n.value = 1
+
+async def apply_input(dut):
+    await ClockCycles(dut.clk, 100)
+    dut.ui_in.value = 100
+    await ClockCycles(dut.clk, 100)
+
+
 @cocotb.test()
 async def test_7seg(dut):
     dut._log.info("start")
@@ -17,17 +27,9 @@ async def test_7seg(dut):
     dut.ui_in.value = 0
     dut.ena.value = 1
 
-    def apply_reset():
-        await ClockCycles(dut.clk, 10)
-        dut.rst_n.value = 1
 
-    def apply_input():
-        await ClockCycles(dut.clk, 100)
-        dut.ui_in.value = 100
-        await ClockCycles(dut.clk, 100)
-    
-    apply_reset()
-    apply_input()
+    apply_reset(dut)
+    apply_input(dut)
 
 
     # dut.ui_in.value = 1
