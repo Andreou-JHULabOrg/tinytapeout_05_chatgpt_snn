@@ -26,7 +26,7 @@ async def spi_write_byte(dut, addr, data):
     tx_data = '0' + int2bin(addr) + int2bin(data) + '000'
     await Timer(SCK_P/2, units="ns")
     
-    for val, i in enumerate(tx_data):
+    for i, val in enumerate(tx_data):
         dut.spi_sck.value = 0
         dut.spi_copi.value = int(tx_data[15-i])
         await Timer(SCK_P/2, units="ns")
