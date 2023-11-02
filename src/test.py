@@ -47,9 +47,9 @@ async def test_7seg(dut):
 
     dut._log.info("reset")
     dut.rst_n.value = 0
-    dut.spi_sck = 0
-    dut.spi_copi = 0
-    dut.spi_cs_n = 1
+    dut.spi_sck.value = 0
+    dut.spi_copi.value = 0
+    dut.spi_cs_n.value = 1
     dut.ena.value = 1
 
 
