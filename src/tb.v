@@ -20,13 +20,20 @@ module tb ();
     reg  clk;
     reg  rst_n;
     reg  ena;
-    reg  [7:0] ui_in;
+    wire  [7:0] ui_in;
     reg  [7:0] uio_in;
 
     wire [6:0] segments = uo_out[6:0];
     wire [7:0] uo_out;
     wire [7:0] uio_out;
     wire [7:0] uio_oe;
+
+    reg spi_cs_n;
+    reg spi_sck;
+    reg spi_copi;
+    reg [2:0] spikes_in;
+
+    assign ui_in = {2'b0, spikes_in, spi_copi, spi_cs_n, spi_sck};
 
     tt_um_chatgpt_snn_mtomlin5 tt_um_seven_segment_seconds (
     // include power ports for the Gate Level test

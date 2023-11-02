@@ -5,6 +5,13 @@ from cocotb.triggers import RisingEdge, FallingEdge, Timer, ClockCycles
 
 segments = [ 63, 6, 91, 79, 102, 109, 125, 7, 127, 111 ]
 
+SCK_P = 160
+CLK_P = 20
+
+def int2bin(x, nbits=8):
+    string = '{0:0' + str(8) + 'b}'
+    return string.format(x)
+
 async def apply_reset(dut):
     await Timer(100, units="ns")
     dut.rst_n.value = 1
@@ -14,6 +21,22 @@ async def apply_input(dut):
     dut.ui_in.value = 100
     await Timer(100, units="ns")
 
+async def spi_write_byte(dut, addr, data):
+    dut.spi_cs_n.value = 0;
+    tx_data = '0' + int2bin(addr) + int2bin(data) + '000'
+    await Timer(SCK_P/2, units="ns")
+    
+    for val in tx_data:
+        dut.sck.value = 0
+        dut.spi_copi.value = tx_data[15-i]
+        await Timer(SCK_P/2, units="ns")
+        dut.sck.value = 1
+        await Timer(SCK_P/2, units="ns")
+
+    dut.sck.value = 0
+    await Timer(SCK_P/2, units="ns")
+    dut.spi_cs_n.value = 1;
+    await Timer(SCK_P/2, units="ns")
 
 @cocotb.test()
 async def test_7seg(dut):
@@ -24,12 +47,14 @@ async def test_7seg(dut):
 
     dut._log.info("reset")
     dut.rst_n.value = 0
-    dut.ui_in.value = 0
+    dut.spi_sck = 0
+    dut.spi_copi = 0
+    dut.spi_cs_n = 1
     dut.ena.value = 1
 
 
     await apply_reset(dut)
-    await apply_input(dut)
+    await spi_write_byte(dut, 1, 1)
 
     await ClockCycles(dut.clk, 100)
 
