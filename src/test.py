@@ -28,8 +28,8 @@ async def test_7seg(dut):
     dut.ena.value = 1
 
 
-    apply_reset(dut)
-    apply_input(dut)
+    await apply_reset(dut)
+    await apply_input(dut)
 
     await ClockCycles(dut.clk, 100)
 
