@@ -9,15 +9,22 @@ segments = [ 63, 6, 91, 79, 102, 109, 125, 7, 127, 111 ]
 async def test_7seg(dut):
     dut._log.info("start")
     clock = Clock(dut.clk, 20, units="ns")
+
     cocotb.start_soon(clock.start())
 
     # reset
     dut._log.info("reset")
     dut.rst_n.value = 0
+    dut.ui_in = 0
+    dut.ui_ena = 1
+
     # set the compare value
     await ClockCycles(dut.clk, 10)
-    dut.ui_in.value = 1
+    dut.rst_n.value = 1
 
+    await ClockCycles(dut.clk, 100)
+    dut.ui_in.value = 100
+    await ClockCycles(dut.clk, 100)
 
 
 
