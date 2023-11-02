@@ -35,9 +35,9 @@ async def spi_write_byte(dut, addr, data):
     await Timer(SCK_P/2, units="ns")
 
 async def apply_spikes(dut, mask, ncycles):
-    dut.spikes_in = mask
+    dut.spikes_in.value = mask
     await Timer(CLK_P*ncycles, units="ns")
-    dut.spikes_in = 0
+    dut.spikes_in.value = 0
 
 @cocotb.test()
 async def test_7seg(dut):
