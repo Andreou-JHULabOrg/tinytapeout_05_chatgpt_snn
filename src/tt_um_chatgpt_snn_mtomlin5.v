@@ -24,7 +24,7 @@ module tt_um_chatgpt_snn_mtomlin5 #( parameter MAX_COUNT = 24'd10_000_000 ) (
     assign cs_n = ui_in[1];
     assign copi = ui_in[2];
     assign uo_out = {4'b0, cipo, spikes_out};
-    assign spikes_in = ui_in[4:2];
+    assign spikes_in = ui_in[5:3];
     assign uio_oe = 8'b11111111; // use bidirectionals as outputs
     assign uio_out = 8'b11111111;
     
