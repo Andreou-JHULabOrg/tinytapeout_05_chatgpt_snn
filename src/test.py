@@ -23,7 +23,7 @@ async def apply_input(dut):
 
 async def spi_write_byte(dut, addr, data):
     dut.spi_cs_n.value = 0;
-    tx_data = '0' + int2bin(addr) + int2bin(data) + '000'
+    tx_data = '0' + int2bin(addr, 4) + int2bin(data, 8) + '000'
     await Timer(SCK_P/2, units="ns")
     
     for i, val in enumerate(tx_data):
@@ -50,6 +50,7 @@ async def test_7seg(dut):
     dut.spi_sck.value = 0
     dut.spi_copi.value = 0
     dut.spi_cs_n.value = 1
+    dut.spikes_in.value = 0
     dut.ena.value = 1
 
 
