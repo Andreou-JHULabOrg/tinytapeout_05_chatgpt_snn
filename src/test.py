@@ -16,11 +16,6 @@ async def apply_reset(dut):
     await Timer(100, units="ns")
     dut.rst_n.value = 1
 
-async def apply_input(dut):
-    await Timer(100, units="ns")
-    dut.ui_in.value = 100
-    await Timer(100, units="ns")
-
 async def spi_write_byte(dut, addr, data):
     dut.spi_cs_n.value = 0;
     tx_data = '0' + int2bin(addr, 4) + int2bin(data, 8) + '000'
@@ -39,7 +34,7 @@ async def spi_write_byte(dut, addr, data):
     dut.spi_cs_n.value = 1;
     await Timer(SCK_P/2, units="ns")
 
-async def spi_write_byte(dut, mask, ncycles):
+async def apply_spikes(dut, mask, ncycles):
     dut.spikes_in = mask
     await Timer(CLK_P*ncycles, units="ns")
     dut.spikes_in = 0
@@ -61,26 +56,26 @@ async def test_7seg(dut):
 
     await apply_reset(dut)
     await spi_write_byte(dut, 1, 1)
-    await spi_write_byte(0, 150)
-    await spi_write_byte(1, 3)
-    await spi_write_byte(2, 5)
-    await spi_write_byte(3, 4)
-    await spi_write_byte(4, 5)
-    await spi_write_byte(5, 6)
-    await spi_write_byte(6, 100)
-    await spi_write_byte(7, 75)
-    await spi_write_byte(8, 50)
-    await spi_write_byte(9, 14)
-    await spi_write_byte(10, 15)
-    await spi_write_byte(11, 16)
-    await spi_write_byte(12, 17)
-    await spi_write_byte(13, 18)
-    await spi_write_byte(14, 19)
+    await spi_write_byte(dut, 0, 150)
+    await spi_write_byte(dut, 1, 3)
+    await spi_write_byte(dut, 2, 5)
+    await spi_write_byte(dut, 3, 4)
+    await spi_write_byte(dut, 4, 5)
+    await spi_write_byte(dut, 5, 6)
+    await spi_write_byte(dut, 6, 100)
+    await spi_write_byte(dut, 7, 75)
+    await spi_write_byte(dut, 8, 50)
+    await spi_write_byte(dut, 9, 14)
+    await spi_write_byte(dut, 10, 15)
+    await spi_write_byte(dut, 11, 16)
+    await spi_write_byte(dut, 12, 17)
+    await spi_write_byte(dut, 13, 18)
+    await spi_write_byte(dut, 14, 19)
 
-    await apply_input(7, 100)
+    await apply_spikes(dut, 7, 100)
 
-    await spi_write_byte(3, 100);
-    await apply_input(1, 100)
+    await spi_write_byte(dut, 3, 100);
+    await apply_spikes(dut, 1, 100)
 
     await ClockCycles(dut.clk, 100)
 
