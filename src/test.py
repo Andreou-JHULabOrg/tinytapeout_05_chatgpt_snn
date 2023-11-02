@@ -12,20 +12,22 @@ async def test_7seg(dut):
 
     cocotb.start_soon(clock.start())
 
-    # reset
     dut._log.info("reset")
     dut.rst_n.value = 0
     dut.ui_in.value = 0
     dut.ena.value = 1
 
-    # set the compare value
-    await ClockCycles(dut.clk, 10)
-    dut.rst_n.value = 1
+    def apply_reset():
+        await ClockCycles(dut.clk, 10)
+        dut.rst_n.value = 1
 
-    await ClockCycles(dut.clk, 100)
-    dut.ui_in.value = 100
-    await ClockCycles(dut.clk, 100)
-
+    def apply_input():
+        await ClockCycles(dut.clk, 100)
+        dut.ui_in.value = 100
+        await ClockCycles(dut.clk, 100)
+    
+    apply_reset()
+    apply_input()
 
 
     # dut.ui_in.value = 1
