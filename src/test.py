@@ -9,7 +9,7 @@ SCK_P = 160
 CLK_P = 20
 
 def int2bin(x, nbits=8):
-    string = '{0:0' + str(8) + 'b}'
+    string = '{0:0' + str(nbits) + 'b}'
     return string.format(x)
 
 async def apply_reset(dut):
