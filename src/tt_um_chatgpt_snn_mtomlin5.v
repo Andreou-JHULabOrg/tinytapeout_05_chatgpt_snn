@@ -29,14 +29,14 @@ module tt_um_chatgpt_snn_mtomlin5 #( parameter MAX_COUNT = 24'd10_000_000 ) (
     assign uio_out = 8'b11111111;
     
     top i_top (
-        .clk       (clk       ),
-        .reset     (reset     ),
-        .sclk      (sclk      ),
-        .cs_n      (cs_n      ),
-        .mosi      (copi      ),
-        .miso      (cipo      ),
-        .spikes_in (spikes_in ),
-        .spikes_out(spikes_out)
+        .clk            (clk       ),
+        .reset          (reset     ),
+        .sclk           (sclk      ),
+        .cs_n           (cs_n      ),
+        .mosi           (copi      ),
+        .miso           (cipo      ),
+        .spikes_in_async(spikes_in ),
+        .spikes_out     (spikes_out)
     );
 
 

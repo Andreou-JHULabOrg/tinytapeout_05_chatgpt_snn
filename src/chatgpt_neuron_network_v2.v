@@ -4,7 +4,7 @@ module chatgpt_neuron_network (
     input [3:0] addr,                   // 4-bit address to select parameter
     input [7:0] data_in,                // 8-bit data from the register file
     input write_enable,                 // write enable signal for register file
-    input [2:0] spikes_in,              // 3-bit input spikes
+    input [2:0] spikes_in_async,              // 3-bit input spikes
     output [2:0] spikes_out             // 3-bit vector for spike outputs from the second layer
 );
 
@@ -12,8 +12,21 @@ module chatgpt_neuron_network (
     reg [7:0] SECOND_LAYER_WEIGHTS[2:0][2:0];
     reg [7:0] FIRST_LAYER_WEIGHTS[2:0];  // Weights for each neuron in the first layer
     integer idx1, idx2, idx3, idx4, idx5, idx6, idx7;  // Loop variables
-    integer i, j; 
     reg [7:0] input_currents[2:0];  // Computed input currents for the first layer
+
+    // Synchronizer flip-flops
+    reg [2:0] spikes_in_stage1, spikes_in;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            spikes_in_stage1 <= 3'b000;
+            spikes_in <= 3'b000;
+        end else begin
+            spikes_in <= spikes_in_stage1;
+            spikes_in_stage1 <= spikes_in_async;
+            
+        end
+    end
 
     // Process data_in based on addr input
     always @(posedge clk or posedge reset) begin
@@ -37,9 +50,7 @@ module chatgpt_neuron_network (
                 4'd5: FIRST_LAYER_WEIGHTS[2] <= data_in;
                 default: 
                     if (addr >= 4'd6 && addr <= 4'd14) begin
-                        idx6 = (addr - 4'd6) / 3;
-                        idx7 = (addr - 4'd6) % 3;
-                        SECOND_LAYER_WEIGHTS[idx6][idx7] <= data_in;
+                        SECOND_LAYER_WEIGHTS[(addr - 4'd6) / 3][(addr - 4'd6) % 3] <= data_in;
                     end
             endcase
         end
@@ -72,20 +83,33 @@ module chatgpt_neuron_network (
 
     // Logic to compute effective current for second layer neurons based on spikes and SECOND_LAYER_WEIGHTS
     reg [7:0] second_layer_currents[2:0];
-    always @(posedge clk) begin
+    reg [7:0] next_second_layer_currents[2:0];  // intermediate variables
+
+    // Combinatorial block
+    always @* begin
         for (idx4 = 0; idx4 < 3; idx4 = idx4 + 1) begin
-            second_layer_currents[idx4] = 0;
+            next_second_layer_currents[idx4] = 0;  // default to current value
             for (idx5 = 0; idx5 < 3; idx5 = idx5 + 1) begin
                 if (first_layer_spikes[idx5]) begin
                     // Check for potential overflow
-                    if ((255 - second_layer_currents[idx4]) < SECOND_LAYER_WEIGHTS[idx5][idx4]) 
-                        second_layer_currents[idx4] = 255;  // Set to max value if overflow occurs
+                    if ((255 - next_second_layer_currents[idx4]) < SECOND_LAYER_WEIGHTS[idx5][idx4]) 
+                        next_second_layer_currents[idx4] = 255;  // Set to max value if overflow occurs
                     else
-                        second_layer_currents[idx4] = second_layer_currents[idx4] + SECOND_LAYER_WEIGHTS[idx5][idx4];
+                        next_second_layer_currents[idx4] = next_second_layer_currents[idx4] + SECOND_LAYER_WEIGHTS[idx5][idx4];
                 end
             end
         end
     end
+
+    // Sequential block
+    always @(posedge clk) begin
+        for (idx4 = 0; idx4 < 3; idx4 = idx4 + 1) begin
+            second_layer_currents[idx4] <= next_second_layer_currents[idx4];
+        end
+    end
+
+
+
 
     // Second layer of neurons
     generate

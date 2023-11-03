@@ -5,7 +5,7 @@ module top (
     input cs_n,     // SPI Chip Select (Active Low)
     input mosi,     // SPI Master Out Slave In
     output miso,    // SPI Master In Slave Out
-    input [2:0] spikes_in,              // 3-bit input spikes
+    input [2:0] spikes_in_async,              // 3-bit input spikes
     output [2:0] spikes_out             // 3-bit vector for spike outputs from the second layer
 );
 
@@ -33,7 +33,7 @@ module top (
         .addr(addr_out),
         .data_in(data_out),
         .write_enable(write_enable),
-        .spikes_in(spikes_in),
+        .spikes_in_async(spikes_in_async),
         .spikes_out(spikes_out)
     );
 
