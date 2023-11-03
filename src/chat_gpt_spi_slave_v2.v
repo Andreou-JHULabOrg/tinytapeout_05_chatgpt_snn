@@ -24,6 +24,25 @@ module spi_slave (
 
     reg miso_buf;  // Buffer to hold miso value for an sclk cycle
 
+    // Registers for synchronizing cs_n and mosi
+    reg cs_n_synced, cs_n_synced2;
+    reg mosi_synced, mosi_synced2;
+
+    // Synchronization logic for cs_n and mosi
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            cs_n_synced <= 1'b1;     // Assume active low, so default to 'de-asserted'
+            cs_n_synced2 <= 1'b1;
+            mosi_synced <= 1'b0;
+            mosi_synced2 <= 1'b0;
+        end else begin
+            cs_n_synced <= cs_n;
+            cs_n_synced2 <= cs_n_synced;
+            mosi_synced <= mosi;
+            mosi_synced2 <= mosi_synced;
+        end
+    end
+
     // Shift register to sample edges of sclk
     always @(posedge clk) begin
         sclk_prev2 <= sclk_prev;
@@ -32,7 +51,7 @@ module spi_slave (
         sclk_negedge <= sclk_prev2 & ~sclk_prev;       
     end
 
-    // FSM transition and miso_output update
+    // FSM transition and miso_output update using synchronized cs_n and mosi
     always @(posedge clk or posedge reset) begin
         if (reset) begin
             state <= IDLE;
@@ -44,7 +63,7 @@ module spi_slave (
             write_enable <= 0;
             miso_buf <= 1'b0;
         end else begin
-            if (!cs_n) begin
+            if (!cs_n_synced2) begin
                 if (sclk_posedge) begin
                     case(state)
                         IDLE: begin
@@ -56,7 +75,7 @@ module spi_slave (
                         end
 
                         ADDR_SHIFT: begin
-                            shift_addr <= {shift_addr[2:0], mosi};
+                            shift_addr <= {shift_addr[2:0], mosi_synced2};
                             state_count <= state_count + 1'b1;
                             if (state_count == 3'b11) begin
                                 state_count <= 4'b0;
@@ -65,7 +84,7 @@ module spi_slave (
                         end
 
                         DATA_SHIFT: begin
-                            shift_data <= {shift_data[6:0], mosi};
+                            shift_data <= {shift_data[6:0], mosi_synced2};
                             state_count <= state_count + 1'b1;
                             if (state_count == 4'b0111) begin
                                 state_count <= 4'b0;
@@ -94,6 +113,6 @@ module spi_slave (
     end
 
     // MISO behavior using assign statement
-    assign miso = (cs_n) ? 1'b0 : miso_buf;
+    assign miso = (cs_n_synced2) ? 1'b0 : miso_buf;
 
 endmodule
