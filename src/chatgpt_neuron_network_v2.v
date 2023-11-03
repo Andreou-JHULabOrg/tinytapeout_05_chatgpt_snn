@@ -103,8 +103,8 @@ module chatgpt_neuron_network (
 
     // Sequential block
     always @(posedge clk) begin
-        for (idx4 = 0; idx4 < 3; idx4 = idx4 + 1) begin
-            second_layer_currents[idx4] <= next_second_layer_currents[idx4];
+        for (idx6 = 0; idx6 < 3; idx6 = idx6 + 1) begin
+            second_layer_currents[idx6] <= next_second_layer_currents[idx6];
         end
     end
 
