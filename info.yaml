@@ -72,6 +72,13 @@ documentation:
 # A description of what the bidirectional I/O pins do (e.g. I2C SDA, I2C SCL, etc)
   bidirectional:
     - GPIO pins are wired to outputs and driven high (unused by the design).
+    - a
+    - a
+    - a
+    - a
+    - a
+    - a
+    - a
 
 # The following fields are optional
   tag:          "chatgpt, SNNs, spi"   
