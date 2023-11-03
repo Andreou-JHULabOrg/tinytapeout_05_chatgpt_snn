@@ -11,7 +11,7 @@ module chatgpt_neuron_network (
     reg [7:0] THRESHOLD, LEAK_RATE, REFRAC_PERIOD;
     reg [7:0] SECOND_LAYER_WEIGHTS[2:0][2:0];
     reg [7:0] FIRST_LAYER_WEIGHTS[2:0];  // Weights for each neuron in the first layer
-    integer idx1, idx2, idx3, idx4, idx5, idx6, idx7;  // Loop variables
+    integer idx1, idx2, idx3, idx_comb, idx_seq, idx_seq2;  // Loop variables
     reg [7:0] input_currents[2:0];  // Computed input currents for the first layer
 
     // Synchronizer flip-flops
@@ -87,15 +87,15 @@ module chatgpt_neuron_network (
 
     // Combinatorial block
     always @* begin
-        for (idx4 = 0; idx4 < 3; idx4 = idx4 + 1) begin
-            next_second_layer_currents[idx4] = 0;  // default to current value
-            for (idx5 = 0; idx5 < 3; idx5 = idx5 + 1) begin
-                if (first_layer_spikes[idx5]) begin
+        for (idx_comb = 0; idx_comb < 3; idx_comb = idx_comb + 1) begin
+            next_second_layer_currents[idx_comb] = 0;  // default to current value
+            for (idx_seq = 0; idx_seq < 3; idx_seq = idx_seq + 1) begin
+                if (first_layer_spikes[idx_seq]) begin
                     // Check for potential overflow
-                    if ((255 - next_second_layer_currents[idx4]) < SECOND_LAYER_WEIGHTS[idx5][idx4]) 
-                        next_second_layer_currents[idx4] = 255;  // Set to max value if overflow occurs
+                    if ((255 - next_second_layer_currents[idx_comb]) < SECOND_LAYER_WEIGHTS[idx_seq][idx_comb]) 
+                        next_second_layer_currents[idx_comb] = 255;  // Set to max value if overflow occurs
                     else
-                        next_second_layer_currents[idx4] = next_second_layer_currents[idx4] + SECOND_LAYER_WEIGHTS[idx5][idx4];
+                        next_second_layer_currents[idx_comb] = next_second_layer_currents[idx_comb] + SECOND_LAYER_WEIGHTS[idx_seq][idx_comb];
                 end
             end
         end
@@ -103,13 +103,10 @@ module chatgpt_neuron_network (
 
     // Sequential block
     always @(posedge clk) begin
-        for (idx6 = 0; idx6 < 3; idx6 = idx6 + 1) begin
-            second_layer_currents[idx6] <= next_second_layer_currents[idx6];
+        for (idx_seq2 = 0; idx_seq2 < 3; idx_seq2 = idx_seq2 + 1) begin
+            second_layer_currents[idx_seq2] <= next_second_layer_currents[idx_seq2];
         end
     end
-
-
-
 
     // Second layer of neurons
     generate
