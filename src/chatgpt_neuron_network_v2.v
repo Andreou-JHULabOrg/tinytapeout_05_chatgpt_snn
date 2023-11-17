@@ -58,8 +58,8 @@ module chatgpt_neuron_network (
 
     // Compute input currents from spikes_in and FIRST_LAYER_WEIGHTS
     always @(*) begin
-        for (idx1 = 0; idx1 < 3; idx1 = idx1 + 1) begin
-            input_currents[idx1] = spikes_in[idx1] ? FIRST_LAYER_WEIGHTS[idx1] : 8'd0;
+        for (idx3 = 0; idx3 < 3; idx3 = idx3 + 1) begin
+            input_currents[idx3] = spikes_in[idx3] ? FIRST_LAYER_WEIGHTS[idx3] : 8'd0;
         end
     end
 

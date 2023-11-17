@@ -18,6 +18,8 @@ module tt_um_chatgpt_snn_mtomlin5 #( parameter MAX_COUNT = 24'd10_000_000 ) (
     wire [2:0] spikes_in;
     wire [2:0] spikes_out;
     wire reset;
+    wire [7:0] x;
+    wire [7:0] y;
 
     assign reset = ~rst_n;
     assign sclk = ui_in[0];
@@ -25,8 +27,18 @@ module tt_um_chatgpt_snn_mtomlin5 #( parameter MAX_COUNT = 24'd10_000_000 ) (
     assign copi = ui_in[2];
     assign uo_out = {4'b0, cipo, spikes_out};
     assign spikes_in = ui_in[5:3];
-    assign uio_oe = 8'b11111111; // use bidirectionals as outputs
-    assign uio_out = 8'b11111111;
+    assign uio_oe = y; // use bidirectionals as outputs
+    assign uio_out = x;
+
+    integer i;
+    always @(*) begin
+        for (i = 0; i < 8; i = i + 1) begin
+            x[i] = 1'b1;
+        end
+        for (i = 0; i < 8; i = i + 1) begin
+            y[i] = 1'b1;
+        end
+    end
     
     top i_top (
         .clk            (clk       ),
