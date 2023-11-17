@@ -35,9 +35,6 @@ module tt_um_chatgpt_snn_mtomlin5 #( parameter MAX_COUNT = 24'd10_000_000 ) (
         for (i = 0; i < 8; i = i + 1) begin
             y[i] = 1'b1;
         end
-    end
-
-    always @(*) begin
         for (i = 0; i < 8; i = i + 1) begin
             x[i] = 1'b1;
         end
