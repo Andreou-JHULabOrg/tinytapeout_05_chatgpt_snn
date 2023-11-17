@@ -37,17 +37,4 @@ module top (
         .spikes_out(spikes_out)
     );
 
-    reg [7:0] x;
-    reg [7:0] y;
-    
-    integer i;
-    always @(*) begin
-        for (i = 0; i < 8; i = i + 1) begin
-            y[i] = 1'b1;
-        end
-        for (i = 0; i < 8; i = i + 1) begin
-            x[i] = 1'b1;
-        end
-    end
-
 endmodule
