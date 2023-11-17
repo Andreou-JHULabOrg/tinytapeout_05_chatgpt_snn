@@ -18,8 +18,8 @@ module tt_um_chatgpt_snn_mtomlin5 #( parameter MAX_COUNT = 24'd10_000_000 ) (
     wire [2:0] spikes_in;
     wire [2:0] spikes_out;
     wire reset;
-    wire [7:0] x;
-    wire [7:0] y;
+    reg [7:0] x;
+    reg [7:0] y;
 
     assign reset = ~rst_n;
     assign sclk = ui_in[0];
@@ -33,10 +33,13 @@ module tt_um_chatgpt_snn_mtomlin5 #( parameter MAX_COUNT = 24'd10_000_000 ) (
     integer i;
     always @(*) begin
         for (i = 0; i < 8; i = i + 1) begin
-            x[i] = 1'b1;
-        end
-        for (i = 0; i < 8; i = i + 1) begin
             y[i] = 1'b1;
+        end
+    end
+
+    always @(*) begin
+        for (i = 0; i < 8; i = i + 1) begin
+            x[i] = 1'b1;
         end
     end
     
