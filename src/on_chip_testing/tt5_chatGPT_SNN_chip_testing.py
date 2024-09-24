@@ -105,7 +105,7 @@ print(f'Bidirs is now {tt.bidir_byte:08b}')
 tt.dump()
 
 # start automatic project clocking
-tt.clock_project_PWM(35e6) # clocking projects @ 50MHz - 20 ns -> measurements demonstrate a maximum clock frequency of 41.7 MHz and the design works up to 35 kHz
+tt.clock_project_PWM(35e6) # clocking projects @ 35MHz - 28.57 ns -> measurements demonstrate a maximum configurable clock frequency of 41.7 MHz - the maximum output frequency (I/O pads limits) is 35 MHz 
 
 apply_spikes( [0,0,0], 50) #(spikes, spike_time_ms)
 
